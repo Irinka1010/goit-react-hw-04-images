@@ -2,6 +2,7 @@ import { IoSearchSharp } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import { SearchbarStyled } from 'components/Searchbar/StyledSearchbar';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 export default function Searchbar({ onSudmit }) {
   const [nameImages, nameImagesState] = useState('');
@@ -27,8 +28,8 @@ export default function Searchbar({ onSudmit }) {
         </button>
         <input
           type="text"
-          // autocomplete="off"
-          // autofocus
+          autocomplete="off"
+          autofocus
           name="nameImages"
           value={nameImages}
           placeholder="Search images and photos"
@@ -38,3 +39,6 @@ export default function Searchbar({ onSudmit }) {
     </SearchbarStyled>
   );
 }
+Searchbar.propTypes = {
+  onSudmit: PropTypes.func.isRequired,
+};

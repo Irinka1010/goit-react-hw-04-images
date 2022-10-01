@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,83 +9,70 @@ import Loader from 'components/Loader/Loader';
 import ImageGallery from 'components/ImageGallery/ImageGallery';
 import { APP } from 'components/StyledApp';
 
-export default class App extends Component {
-  state = {
-    nameImages: '',
-    pictures: [],
-    page: 1,
-    bigPicture: null,
-    modalOpen: false,
-    loading: false,
-    error: null,
-  };
-  async componentDidUpdate(prevProps, prevState) {
-    const prevPage = prevState.page;
-    const prevName = prevState.nameImages;
-    const { nameImages, page } = this.state;
+import { useState, useEffect } from 'react';
 
-    if (prevPage !== page || prevName !== nameImages) {
+export default function App() {
+  const [nameImages, setNameImages] = useState('');
+  const [pictures, setPictures] = useState([]);
+  const [page, setPage] = useState(1);
+  const [bigPicture, setBigPicture] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!nameImages) {
+      return;
+    }
+    const fetchPictures = async () => {
+      setLoading(true);
       try {
-        this.setState({
-          loading: true,
+        const data = await fetchImages(nameImages, page);
+        setPictures(prevPictures => {
+          return [...prevPictures, ...data];
         });
-        const pictures = await fetchImages(nameImages, page);
-        this.setState(state => ({
-          pictures: [...state.pictures, ...pictures],
-          loading: false,
-        }));
-        if (pictures.length === 0) {
+        setLoading(false);
+        if (data.length === 0) {
           toast.info('Sorry, request not found, try something else');
         }
       } catch (error) {
-        this.setState({
-          error,
-        });
+        setError(error);
       } finally {
-        this.setState({
-          loading: false,
-        });
+        setLoading(false);
       }
-    }
-  }
-  openModal = bigPicture => {
-    this.setState({
-      modalOpen: true,
-      bigPicture,
-    });
+    };
+    fetchPictures();
+  }, [page, nameImages]);
+
+  const openModal = bigPicture => {
+    setModalOpen(true);
+    setBigPicture(bigPicture);
   };
-  closeModal = () => {
-    this.setState({
-      modalOpen: false,
-      bigPicture: null,
-    });
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setBigPicture(null);
   };
-  loadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+
+  const hendleFormSubmit = nameImages => {
+    setNameImages(nameImages);
+    setPictures([]);
+    setPage(1);
   };
-  hendleFormSubmit = nameImages => {
-    this.setState({
-      nameImages,
-      pictures: [],
-      page: 1,
-    });
+  const loadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
-  render() {
-    const { pictures, loading, bigPicture, error, modalOpen } = this.state;
-    const { loadMore, openModal, closeModal } = this;
-    const isPictures = Boolean(pictures.length);
-    return (
-      <APP>
-        <Searchbar onSudmit={this.hendleFormSubmit} />
-        {loading && <Loader />}
-        {modalOpen && <Modal onClose={closeModal} bigPicture={bigPicture} />}
-        {error && <p>Спрабуйте пізніше</p>}
-        {isPictures && <ImageGallery onClick={openModal} pictures={pictures} />}
-        {pictures.length >= 12 && <Button changePage={loadMore} />}
-        <ToastContainer autoClose={3000} />
-      </APP>
-    );
-  }
+  const isPictures = Boolean(pictures.length);
+
+  return (
+    <APP>
+      <Searchbar onSudmit={hendleFormSubmit} />
+      {loading && <Loader />}
+      {modalOpen && <Modal onClose={closeModal} bigPicture={bigPicture} />}
+      {error && <p>Спрабуйте пізніше</p>}
+      {isPictures && <ImageGallery onClick={openModal} pictures={pictures} />}
+      {pictures.length >= 12 && <Button changePage={loadMore} />}
+      <ToastContainer autoClose={3000} />
+    </APP>
+  );
 }
