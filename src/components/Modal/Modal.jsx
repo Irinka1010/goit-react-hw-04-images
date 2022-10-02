@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 const modalRoot = document.querySelector('#modal-root');
 
-export default function Modal({ bigPicture, onClose }) {
+export default function Modal({ url, onClose }) {
   useEffect(() => {
     window.addEventListener('keydown', hendleKeydown);
     return () => {
@@ -25,7 +25,7 @@ export default function Modal({ bigPicture, onClose }) {
   return createPortal(
     <Overlay onClick={hendeleBackdropClick}>
       <ModalStyled>
-        <img src={bigPicture} alt="" />
+        <img src={url} alt="" />
       </ModalStyled>
     </Overlay>,
     modalRoot

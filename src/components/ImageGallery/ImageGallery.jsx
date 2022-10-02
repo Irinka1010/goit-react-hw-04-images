@@ -2,7 +2,7 @@ import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import { List } from 'components/ImageGallery/StyledImedgeGellery';
 import PropTypes from 'prop-types';
 
-export default function ImageGallery({ pictures, onClick }) {
+export default function ImageGallery({ pictures }) {
   return (
     <List>
       {pictures.map(({ id, webformatURL, tag, largeImageURL }) => (
@@ -11,7 +11,6 @@ export default function ImageGallery({ pictures, onClick }) {
           webformatURL={webformatURL}
           tag={tag}
           largeImageURL={largeImageURL}
-          onClick={onClick}
         />
       ))}
     </List>
