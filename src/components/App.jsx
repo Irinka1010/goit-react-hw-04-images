@@ -21,7 +21,7 @@ export default function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!nameImages) {
+    if (!nameImages && page === 1) {
       return;
     }
     const fetchPictures = async () => {
